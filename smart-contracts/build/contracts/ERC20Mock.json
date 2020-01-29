@@ -2670,12 +2670,12 @@
         }
       },
       "links": {},
-      "address": "0x4fe6B1Bf5306e6aD59db78F101f7D9c2a6C2b496",
-      "transactionHash": "0x8f5ac5039f45e4c6bd983eed379b03b913064a6225dff91e573623b37d328f94"
+      "address": "0x7A01955169e0Eb4E464E83B63C604BbA92531678",
+      "transactionHash": "0xdde241b134435e15418df789fa478699145cd270fb385168a8a3939cb62fff48"
     }
   },
   "schemaVersion": "3.0.22",
-  "updatedAt": "2020-01-29T15:19:02.444Z",
+  "updatedAt": "2020-01-29T15:58:19.470Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {

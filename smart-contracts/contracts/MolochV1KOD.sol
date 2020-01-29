@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./GuildBank.sol";
 
 
+
 // This only extends the Moloch v1 with extra functions, events, etc
 
 contract MolochV1KOD {
