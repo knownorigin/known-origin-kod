@@ -1,0 +1,24 @@
+{
+  "name": "known-origin-kod-smart-contracts",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "truffle test --network development",
+    "coverage": "truffle run coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blockrockettech/TimeLockTokenEscrow.git"
+  },
+  "author": "BlockRocket Tech",
+  "license": "MIT",
+  "devDependencies": {
+    "@blockrocket/utils": "^1.0.8",
+    "@openzeppelin/contracts": "^2.4.0",
+    "@openzeppelin/test-helpers": "^0.5.4",
+    "@truffle/hdwallet-provider": "^1.0.29",
+    "chai": "^4.2.0",
+    "solidity-coverage": "^0.7.0-beta.2",
+    "truffle-flattener": "^1.4.2",
+    "truffle-plugin-verify": "^0.3.8"
+  }
+}
