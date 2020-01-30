@@ -58,7 +58,7 @@ contract('KOD tests', function ([creator, mrOne, msTwo, ...accounts]) {
                 await this.guildBank.flip();
 
                 (await this.token.balanceOf(this.guildBankAddress)).should.be.bignumber.equal(pointOneEth);
-                (await bankBalance.delta()).should.be.bignumber.equal(pointOneEth.neg());
+                (await bankBalance.delta()).should.be.bignumber.equal(pointOneEth.neg()); // -pointOneEth
             });
         });
     });

@@ -4,8 +4,9 @@ pragma solidity 0.5.10;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./GuildBank.sol";
+import "./ICreateEdition.sol";
 
-
+import "./mock/KOSelfServiceMock.sol";
 
 // This only extends the Moloch v1 with extra functions, events, etc
 
@@ -415,5 +416,51 @@ contract MolochV1KOD {
         require(members[memberAddress].exists, "Moloch::getMemberProposalVote - member doesn't exist");
         require(proposalIndex < proposalQueue.length, "Moloch::getMemberProposalVote - proposal doesn't exist");
         return proposalQueue[proposalIndex].votesByMember[memberAddress];
+    }
+
+    // Non-moloch v1 code below
+
+    ICreateEdition public createEdition = new KOSelfServiceMock();
+
+    struct NFTProposal {
+        uint256 totalAvailable;
+        uint256 priceInWei;
+        string tokenUri;
+    }
+
+    mapping (uint256 => NFTProposal) public nftProposals;
+
+//    function createEdition(
+//        bool _enableAuction,
+//        address _optionalSplitAddress,
+//        uint256 _optionalSplitRate,
+//        uint256 _totalAvailable,
+//        uint256 _priceInWei,
+//        uint256 _startDate,
+//        uint256 _endDate,
+//        uint256 _artistCommission, 85
+//        uint256 _editionType,
+//        string memory _tokenUri
+//    )
+
+    function submitNFTProposal(
+        uint256 sharesRequested,
+        string memory details,
+        uint256 totalAvailable,
+        uint256 priceInWei,
+        string memory tokenUri
+    )
+    public
+    onlyDelegate {
+        submitProposal(msg.sender, 0, sharesRequested, details);
+        uint256 proposalIndex = proposalQueue.length.sub(1);
+
+        NFTProposal memory nftProposal = NFTProposal({
+            totalAvailable: totalAvailable,
+            priceInWei: priceInWei,
+            tokenUri: tokenUri
+            });
+
+        nftProposals[proposalIndex] = nftProposal;
     }
 }
