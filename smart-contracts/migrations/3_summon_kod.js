@@ -3,7 +3,7 @@ const {getAccountAddress} = require('@blockrocket/utils');
 const MNEMONIC = process.env.ESCROW_MNEMONIC || '';
 const INFURA_KEY = process.env.ESCROW_INFURA_KEY || '';
 
-const ERC20Mock = artifacts.require("ERC20Mock");
+const WETH9 = artifacts.require("WETH9");
 const MolochV1KOD = artifacts.require("MolochV1KOD");
 
 module.exports = async function (deployer, network, accounts) {
@@ -23,7 +23,7 @@ module.exports = async function (deployer, network, accounts) {
     //     uint256 _processingReward
     // )
 
-    const token = await ERC20Mock.deployed();
+    const token = await WETH9.deployed();
     await deployer.deploy(
         MolochV1KOD,
         creator,

@@ -1,10 +1,10 @@
-pragma solidity 0.5.14;
+pragma solidity 0.5.10;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/ownership/Ownable.sol";
 
-import "./ILiquidityProvider.sol";
+import "./mock/WETH9.sol";
 
 contract GuildBank is Ownable {
     using SafeMath for uint256;
@@ -24,15 +24,16 @@ contract GuildBank is Ownable {
     }
 
     // Non-moloch v1 code below
-    ILiquidityProvider public liquidityProvider; // KOD needs a way to flip native ETH to ERC20 tokens
 
-    function setLiquidityProvider(ILiquidityProvider _liquidityProvider) public onlyOwner returns (bool) {
-        liquidityProvider = _liquidityProvider;
-        return true;
-    }
+    // allow direct ETH to be sent to the bank
+    function() external payable {}
 
-    function flipToApprovedToken() public returns (bool) {
-        liquidityProvider.flipEthToERC20(address(this).balance, approvedToken, address(this));
-        return true;
+    // this allows us to flip the ETH accrued
+    // presumes the IERC20 has a defualt payment to convert ETH to token
+    // wETH does as we will be using that!
+    function flip() public returns (bool) {
+        (bool success,) = address(approvedToken).call.value(address(this).balance)("");
+        require(success, "Conversion failed :(");
+        return success;
     }
 }

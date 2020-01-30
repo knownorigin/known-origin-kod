@@ -1,4 +1,4 @@
-pragma solidity 0.5.14;
+pragma solidity 0.5.10;
 
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -103,7 +103,7 @@ contract MolochV1KOD {
     ********/
     constructor(
         address summoner,
-        address _approvedToken,
+        address _approvedToken, // for KO this needs to be wETH!
         uint256 _periodDuration,
         uint256 _votingPeriodLength,
         uint256 _gracePeriodLength,
