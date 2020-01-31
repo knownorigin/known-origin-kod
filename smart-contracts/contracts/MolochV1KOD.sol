@@ -249,9 +249,9 @@ contract MolochV1KOD {
         require(proposalIndex < proposalQueue.length, "Moloch::processProposal - proposal does not exist");
         Proposal storage proposal = proposalQueue[proposalIndex];
 
-        require(getCurrentPeriod() >= proposal.startingPeriod.add(votingPeriodLength).add(gracePeriodLength), "Moloch::processProposal - proposal is not ready to be processed");
         require(proposal.processed == false, "Moloch::processProposal - proposal has already been processed");
-        require(proposalIndex == 0 || proposalQueue[proposalIndex.sub(1)].processed, "Moloch::processProposal - previous proposal must be processed");
+        require(getCurrentPeriod() >= proposal.startingPeriod.add(votingPeriodLength).add(gracePeriodLength), "Moloch::processProposal - proposal is not ready to be processed");
+    require(proposalIndex == 0 || proposalQueue[proposalIndex.sub(1)].processed, "Moloch::processProposal - previous proposal must be processed");
 
         proposal.processed = true;
         totalSharesRequested = totalSharesRequested.sub(proposal.sharesRequested);
@@ -452,7 +452,6 @@ contract MolochV1KOD {
     )
     public
     onlyDelegate {
-        // check sharesRequested not > than x % of DAO
 
         submitProposal(msg.sender, 0, sharesRequested, details);
         uint256 proposalIndex = proposalQueue.length.sub(1);
@@ -464,5 +463,28 @@ contract MolochV1KOD {
             });
 
         nftProposals[proposalIndex] = nftProposal;
+    }
+
+    function processNFTProposal(uint256 proposalIndex) public {
+        processProposal(proposalIndex);
+
+        Proposal storage proposal = proposalQueue[proposalIndex];
+        NFTProposal storage nftProposal = nftProposals[proposalIndex];
+
+        if (proposal.didPass) {
+            // create NFT
+            createEdition.createEdition(
+                true, //bool _enableAuction,
+                address(0x0), //address _optionalSplitAddress,
+                0, //uint256 _optionalSplitRate,
+                nftProposal.totalAvailable, //uint256 _totalAvailable,
+                nftProposal.priceInWei, //uint256 _priceInWei,
+                0, //uint256 _startDate,
+                0, //uint256 _endDate,
+                85, //uint256 _artistCommission,
+                1, //uint256 _editionType,
+                nftProposal.tokenUri //string calldata _tokenUri
+            );
+        }
     }
 }
