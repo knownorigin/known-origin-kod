@@ -452,6 +452,8 @@ contract MolochV1KOD {
     )
     public
     onlyDelegate {
+        // check sharesRequested not > than x % of DAO
+
         submitProposal(msg.sender, 0, sharesRequested, details);
         uint256 proposalIndex = proposalQueue.length.sub(1);
 

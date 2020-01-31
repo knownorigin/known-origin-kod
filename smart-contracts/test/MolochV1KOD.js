@@ -62,4 +62,24 @@ contract('KOD tests', function ([creator, mrOne, msTwo, ...accounts]) {
             });
         });
     });
+
+    describe('submitNFTProposal() - NFTs via DAOs!', function () {
+        describe('happy path', function () {
+            it('adds a NFT proposal', async function () {
+
+                await web3.eth.sendTransaction({from: creator, to: this.token.address, value: pointOneEth.add(pointOneEth)}); // tribute + deposit
+                
+                await this.token.approve(this.kod.address, pointOneEth.add(pointOneEth), {from: creator}); // tribute + deposit
+
+                await this.kod.submitNFTProposal(
+                    1, // shares
+                    "Mona Lisa NFT",
+                    5, // quantity
+                    pointOneEth, // price
+                    "abcdef", // hash
+                    {from: creator}
+                );
+            });
+        });
+    });
 });
