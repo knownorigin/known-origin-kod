@@ -442,6 +442,7 @@ contract MolochV1KOD {
     )
     public
     onlyDelegate {
+        //FIXME add requires 0.4 min, total max 25
 
         submitProposal(msg.sender, 0, sharesRequested, details);
         uint256 proposalIndex = proposalQueue.length.sub(1);
@@ -465,13 +466,13 @@ contract MolochV1KOD {
             // create NFT
             createEdition.createEdition(
                 true, //bool _enableAuction,
-                address(0x0), //address _optionalSplitAddress,
-                0, //uint256 _optionalSplitRate,
+                proposal.proposer, //address _optionalSplitAddress,
+                5, //uint256 _optionalSplitRate,
                 nftProposal.totalAvailable, //uint256 _totalAvailable,
                 nftProposal.priceInWei, //uint256 _priceInWei,
                 0, //uint256 _startDate,
                 0, //uint256 _endDate,
-                85, //uint256 _artistCommission,
+                80, //uint256 _artistCommission,
                 1, //uint256 _editionType,
                 nftProposal.tokenUri //string calldata _tokenUri
             );
