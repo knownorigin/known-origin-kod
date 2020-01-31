@@ -67,8 +67,12 @@ contract('KOD tests', function ([creator, mrOne, msTwo, ...accounts]) {
         describe('happy path', function () {
             it('adds a NFT proposal', async function () {
 
-                await web3.eth.sendTransaction({from: creator, to: this.token.address, value: pointOneEth.add(pointOneEth)}); // tribute + deposit
-                
+                await web3.eth.sendTransaction({
+                    from: creator,
+                    to: this.token.address,
+                    value: pointOneEth.add(pointOneEth)
+                }); // tribute + deposit
+
                 await this.token.approve(this.kod.address, pointOneEth.add(pointOneEth), {from: creator}); // tribute + deposit
 
                 await this.kod.submitNFTProposal(
@@ -79,6 +83,13 @@ contract('KOD tests', function ([creator, mrOne, msTwo, ...accounts]) {
                     "abcdef", // hash
                     {from: creator}
                 );
+
+                const queueLen = await this.kod.getProposalQueueLength();
+                const nftProposalDeets = await this.kod.nftProposals(queueLen.sub(new BN('1'))); // zero indexed
+
+                nftProposalDeets.totalAvailable.should.be.bignumber.equal("5");
+                nftProposalDeets.priceInWei.should.be.bignumber.equal(pointOneEth);
+                nftProposalDeets.tokenUri.should.be.equal("abcdef");
             });
         });
     });
