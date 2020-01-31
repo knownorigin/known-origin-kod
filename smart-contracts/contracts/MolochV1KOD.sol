@@ -104,14 +104,15 @@ contract MolochV1KOD {
     ********/
     constructor(
         address summoner,
-        address _approvedToken, // for KO this needs to be wETH!
+        address _approvedToken,
         uint256 _periodDuration,
         uint256 _votingPeriodLength,
         uint256 _gracePeriodLength,
         uint256 _abortWindow,
         uint256 _proposalDeposit,
         uint256 _dilutionBound,
-        uint256 _processingReward
+        uint256 _processingReward,
+        ICreateEdition _createEdition // extra NFT creator contract address
     ) public {
         require(summoner != address(0), "Moloch::constructor - summoner cannot be 0");
         require(_approvedToken != address(0), "Moloch::constructor - _approvedToken cannot be 0");
@@ -144,6 +145,8 @@ contract MolochV1KOD {
         totalShares = 1;
 
         emit SummonComplete(summoner, 1);
+
+        createEdition = _createEdition;
     }
 
     /*****************
@@ -420,7 +423,7 @@ contract MolochV1KOD {
 
     // Non-moloch v1 code below
 
-    ICreateEdition public createEdition = new KOSelfServiceMock();
+    ICreateEdition public createEdition;
 
     struct NFTProposal {
         uint256 totalAvailable;
@@ -429,19 +432,6 @@ contract MolochV1KOD {
     }
 
     mapping (uint256 => NFTProposal) public nftProposals;
-
-//    function createEdition(
-//        bool _enableAuction,
-//        address _optionalSplitAddress,
-//        uint256 _optionalSplitRate,
-//        uint256 _totalAvailable,
-//        uint256 _priceInWei,
-//        uint256 _startDate,
-//        uint256 _endDate,
-//        uint256 _artistCommission, 85
-//        uint256 _editionType,
-//        string memory _tokenUri
-//    )
 
     function submitNFTProposal(
         uint256 sharesRequested,

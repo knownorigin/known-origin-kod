@@ -4,6 +4,7 @@ const MNEMONIC = process.env.ESCROW_MNEMONIC || '';
 const INFURA_KEY = process.env.ESCROW_INFURA_KEY || '';
 
 const WETH9 = artifacts.require("WETH9");
+const KOSelfServiceMock = artifacts.require("KOSelfServiceMock");
 const MolochV1KOD = artifacts.require("MolochV1KOD");
 
 module.exports = async function (deployer, network, accounts) {
@@ -24,6 +25,7 @@ module.exports = async function (deployer, network, accounts) {
     // )
 
     const token = await WETH9.deployed();
+    const createEdition = await KOSelfServiceMock.deployed();
     await deployer.deploy(
         MolochV1KOD,
         creator,
@@ -35,6 +37,7 @@ module.exports = async function (deployer, network, accounts) {
         '10000000000000000',
         3,
         '10000000000000000',
+        createEdition.address,
         {from: creator}
     );
 };

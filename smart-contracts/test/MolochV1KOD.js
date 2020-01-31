@@ -3,6 +3,7 @@ const {ZERO_ADDRESS} = constants;
 require('chai').should();
 
 const WETH9 = artifacts.require('WETH9');
+const KOSelfServiceMock = artifacts.require('KOSelfServiceMock');
 const MolochV1KOD = artifacts.require('MolochV1KOD');
 const GuildBank = artifacts.require('GuildBank');
 
@@ -19,6 +20,7 @@ const onePeriod = new BN('3600');
 contract('KOD tests', function ([creator, mrOne, msTwo, ...accounts]) {
     beforeEach(async function () {
         this.token = await WETH9.new(creator, {from: creator});
+        this.createEdtion = await KOSelfServiceMock.new(creator, {from: creator});
 
         (await this.token.balanceOf(creator)).should.be.bignumber.equal(zero);
 
@@ -32,6 +34,7 @@ contract('KOD tests', function ([creator, mrOne, msTwo, ...accounts]) {
             pointOneEth,
             3,
             zeroPointOneEth,
+            this.createEdtion.address,
             {from: creator}
         );
         (await this.kod.members(creator))[1].should.be.bignumber.equal('1');
