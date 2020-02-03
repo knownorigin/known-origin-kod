@@ -1,8 +1,8 @@
 pragma solidity 0.5.10;
 
-import "../ICreateEdition.sol";
+import "../ISelfServeEditionCuration.sol";
 
-contract KOSelfServiceMock is ICreateEdition {
+contract KOSelfServiceMock is ISelfServeEditionCuration {
 
     function createEdition(
         bool _enableAuction,

@@ -1,6 +1,6 @@
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 
-const MNEMONIC = process.env.ESCROW_MNEMONIC || '';
+const MNEMONIC = process.env.NIFTY_FOOTBALL_MNEMONIC || '';
 const INFURA_KEY = process.env.PROTOTYPE_BR_INFURA_KEY || '';
 const ETHERSCAN_KEY = process.env.ETHERSCAN_KEY || '';
 

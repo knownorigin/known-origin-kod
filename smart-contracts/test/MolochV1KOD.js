@@ -86,6 +86,8 @@ contract('KOD tests', function ([creator, mrOne, msTwo, ...accounts]) {
                     5, // quantity
                     pointOneEth, // price
                     "abcdef", // hash
+                    80,
+                    5,
                     {from: creator}
                 );
 

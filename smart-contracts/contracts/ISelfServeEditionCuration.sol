@@ -1,6 +1,6 @@
 pragma solidity 0.5.10;
 
-interface ICreateEdition {
+interface ISelfServeEditionCuration {
     function createEdition(
         bool _enableAuction,
         address _optionalSplitAddress,

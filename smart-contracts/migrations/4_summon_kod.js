@@ -24,8 +24,10 @@ module.exports = async function (deployer, network, accounts) {
     //     uint256 _processingReward
     // )
 
+    // '0x9495997eaa3bF58A63407bE1Ef771cAc7D6a204C' << Rinkeby
+
     const token = await WETH9.deployed();
-    const createEdition = await KOSelfServiceMock.deployed();
+    // const createEdition = await KOSelfServiceMock.deployed();
     await deployer.deploy(
         MolochV1KOD,
         creator,
@@ -37,7 +39,7 @@ module.exports = async function (deployer, network, accounts) {
         '10000000000000000',
         3,
         '10000000000000000',
-        createEdition.address,
+        '0x9495997eaa3bF58A63407bE1Ef771cAc7D6a204C',
         {from: creator}
     );
 };

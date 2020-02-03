@@ -4,7 +4,7 @@ pragma solidity 0.5.10;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./GuildBank.sol";
-import "./ICreateEdition.sol";
+import "./ISelfServeEditionCuration.sol";
 
 import "./mock/KOSelfServiceMock.sol";
 
@@ -31,10 +31,10 @@ contract MolochV1KOD {
     // HARD-CODED LIMITS
     // These numbers are quite arbitrary; they are small enough to avoid overflows when doing calculations
     // with periods or shares, yet big enough to not limit reasonable use cases.
-    uint256 constant MAX_VOTING_PERIOD_LENGTH = 10**18; // maximum length of voting period
-    uint256 constant MAX_GRACE_PERIOD_LENGTH = 10**18; // maximum length of grace period
-    uint256 constant MAX_DILUTION_BOUND = 10**18; // maximum dilution bound
-    uint256 constant MAX_NUMBER_OF_SHARES = 10**18; // maximum number of shares that can be minted
+    uint256 constant MAX_VOTING_PERIOD_LENGTH = 10 ** 18; // maximum length of voting period
+    uint256 constant MAX_GRACE_PERIOD_LENGTH = 10 ** 18; // maximum length of grace period
+    uint256 constant MAX_DILUTION_BOUND = 10 ** 18; // maximum dilution bound
+    uint256 constant MAX_NUMBER_OF_SHARES = 10 ** 18; // maximum number of shares that can be minted
 
     /***************
     EVENTS
@@ -79,11 +79,11 @@ contract MolochV1KOD {
         uint256 tokenTribute; // amount of tokens offered as tribute
         string details; // proposal details - could be IPFS hash, plaintext, or JSON
         uint256 maxTotalSharesAtYesVote; // the maximum # of total shares encountered at a yes vote on this proposal
-        mapping (address => Vote) votesByMember; // the votes on this proposal by each member
+        mapping(address => Vote) votesByMember; // the votes on this proposal by each member
     }
 
-    mapping (address => Member) public members;
-    mapping (address => address) public memberAddressByDelegateKey;
+    mapping(address => Member) public members;
+    mapping(address => address) public memberAddressByDelegateKey;
     Proposal[] public proposalQueue;
 
     /********
@@ -112,7 +112,7 @@ contract MolochV1KOD {
         uint256 _proposalDeposit,
         uint256 _dilutionBound,
         uint256 _processingReward,
-        ICreateEdition _createEdition // extra NFT creator contract address
+        ISelfServeEditionCuration _selfServeEditionCuration // extra NFT creator contract address
     ) public {
         require(summoner != address(0), "Moloch::constructor - summoner cannot be 0");
         require(_approvedToken != address(0), "Moloch::constructor - _approvedToken cannot be 0");
@@ -146,7 +146,7 @@ contract MolochV1KOD {
 
         emit SummonComplete(summoner, 1);
 
-        createEdition = _createEdition;
+        selfServeEditionCuration = _selfServeEditionCuration;
     }
 
     /*****************
@@ -187,18 +187,18 @@ contract MolochV1KOD {
 
         // create proposal ...
         Proposal memory proposal = Proposal({
-            proposer: memberAddress,
-            applicant: applicant,
-            sharesRequested: sharesRequested,
-            startingPeriod: startingPeriod,
-            yesVotes: 0,
-            noVotes: 0,
-            processed: false,
-            didPass: false,
-            aborted: false,
-            tokenTribute: tokenTribute,
-            details: details,
-            maxTotalSharesAtYesVote: 0
+            proposer : memberAddress,
+            applicant : applicant,
+            sharesRequested : sharesRequested,
+            startingPeriod : startingPeriod,
+            yesVotes : 0,
+            noVotes : 0,
+            processed : false,
+            didPass : false,
+            aborted : false,
+            tokenTribute : tokenTribute,
+            details : details,
+            maxTotalSharesAtYesVote : 0
             });
 
         // ... and append it to the queue
@@ -254,7 +254,7 @@ contract MolochV1KOD {
 
         require(proposal.processed == false, "Moloch::processProposal - proposal has already been processed");
         require(getCurrentPeriod() >= proposal.startingPeriod.add(votingPeriodLength).add(gracePeriodLength), "Moloch::processProposal - proposal is not ready to be processed");
-    require(proposalIndex == 0 || proposalQueue[proposalIndex.sub(1)].processed, "Moloch::processProposal - previous proposal must be processed");
+        require(proposalIndex == 0 || proposalQueue[proposalIndex.sub(1)].processed, "Moloch::processProposal - previous proposal must be processed");
 
         proposal.processed = true;
         totalSharesRequested = totalSharesRequested.sub(proposal.sharesRequested);
@@ -423,56 +423,64 @@ contract MolochV1KOD {
 
     // Non-moloch v1 code below
 
-    ICreateEdition public createEdition;
+    ISelfServeEditionCuration public selfServeEditionCuration;
 
     struct NFTProposal {
         uint256 totalAvailable;
         uint256 priceInWei;
         string tokenUri;
+        uint256 daoSplit;
+        uint256 proposingArtistSplit;
     }
 
-    mapping (uint256 => NFTProposal) public nftProposals;
+    mapping(uint256 => NFTProposal) public nftProposals;
 
     function submitNFTProposal(
         uint256 sharesRequested,
         string memory details,
         uint256 totalAvailable,
         uint256 priceInWei,
-        string memory tokenUri
+        string memory tokenUri,
+        uint256 daoSplit,
+        uint256 proposingArtistSplit
     )
     public
     onlyDelegate {
-        //FIXME add requires 0.4 min, total max 25
 
+        // get the standard proposal stuff in the moloch
         submitProposal(msg.sender, 0, sharesRequested, details);
         uint256 proposalIndex = proposalQueue.length.sub(1);
 
         NFTProposal memory nftProposal = NFTProposal({
-            totalAvailable: totalAvailable,
-            priceInWei: priceInWei,
-            tokenUri: tokenUri
+            totalAvailable : totalAvailable,
+            priceInWei : priceInWei,
+            tokenUri : tokenUri,
+            daoSplit : daoSplit,
+            proposingArtistSplit : proposingArtistSplit
             });
 
         nftProposals[proposalIndex] = nftProposal;
     }
 
     function processNFTProposal(uint256 proposalIndex) public {
+
+        // let moloch do it's thang
         processProposal(proposalIndex);
 
         Proposal storage proposal = proposalQueue[proposalIndex];
         NFTProposal storage nftProposal = nftProposals[proposalIndex];
 
         if (proposal.didPass) {
-            // create NFT
-            createEdition.createEdition(
+            // create NFT in KO via self serve contract
+            selfServeEditionCuration.createEdition(
                 true, //bool _enableAuction,
                 proposal.proposer, //address _optionalSplitAddress,
-                5, //uint256 _optionalSplitRate,
+                nftProposal.proposingArtistSplit, //uint256 _optionalSplitRate,
                 nftProposal.totalAvailable, //uint256 _totalAvailable,
                 nftProposal.priceInWei, //uint256 _priceInWei,
                 0, //uint256 _startDate,
                 0, //uint256 _endDate,
-                80, //uint256 _artistCommission,
+                nftProposal.daoSplit, //uint256 _artistCommission,
                 1, //uint256 _editionType,
                 nftProposal.tokenUri //string calldata _tokenUri
             );
