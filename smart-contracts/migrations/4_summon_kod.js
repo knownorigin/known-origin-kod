@@ -27,13 +27,14 @@ module.exports = async function (deployer, network, accounts) {
     // '0x9495997eaa3bF58A63407bE1Ef771cAc7D6a204C' << Rinkeby
 
     const token = await WETH9.deployed();
+
     // const createEdition = await KOSelfServiceMock.deployed();
     await deployer.deploy(
         MolochV1KOD,
         creator,
         token.address,
-        3600,
-        2,
+        60 * 10,
+        1,
         1,
         1,
         '10000000000000000',

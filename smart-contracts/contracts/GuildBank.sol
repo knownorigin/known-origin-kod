@@ -26,6 +26,7 @@ contract GuildBank is Ownable {
     // Non-moloch v1 code below
 
     // allow direct ETH to be sent to the bank
+    //FIXME only allow KO to send funds to bank?
     function() external payable {}
 
     // this allows us to flip the ETH accrued

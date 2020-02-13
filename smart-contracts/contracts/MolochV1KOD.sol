@@ -446,7 +446,6 @@ contract MolochV1KOD {
     )
     public
     onlyDelegate {
-
         // get the standard proposal stuff in the moloch
         submitProposal(msg.sender, 0, sharesRequested, details);
         uint256 proposalIndex = proposalQueue.length.sub(1);
@@ -472,7 +471,8 @@ contract MolochV1KOD {
 
         if (proposal.didPass) {
             // create NFT in KO via self serve contract
-            selfServeEditionCuration.createEdition(
+            selfServeEditionCuration.createEditionFor(
+                address(guildBank),
                 true, //bool _enableAuction,
                 proposal.proposer, //address _optionalSplitAddress,
                 nftProposal.proposingArtistSplit, //uint256 _optionalSplitRate,

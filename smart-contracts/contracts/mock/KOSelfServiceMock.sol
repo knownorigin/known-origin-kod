@@ -3,8 +3,8 @@ pragma solidity 0.5.10;
 import "../ISelfServeEditionCuration.sol";
 
 contract KOSelfServiceMock is ISelfServeEditionCuration {
-
-    function createEdition(
+    function createEditionFor(
+        address _artist,
         bool _enableAuction,
         address _optionalSplitAddress,
         uint256 _optionalSplitRate,
@@ -15,9 +15,7 @@ contract KOSelfServiceMock is ISelfServeEditionCuration {
         uint256 _artistCommission,
         uint256 _editionType,
         string calldata _tokenUri
-    )
-    external
-    returns (uint256 _editionNumber) {
+    ) external returns (uint256 _editionNumber) {
         return block.number;
     }
 }

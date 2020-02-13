@@ -1,7 +1,8 @@
 pragma solidity 0.5.10;
 
 interface ISelfServeEditionCuration {
-    function createEdition(
+    function createEditionFor(
+        address _artist,
         bool _enableAuction,
         address _optionalSplitAddress,
         uint256 _optionalSplitRate,
