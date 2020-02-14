@@ -109,7 +109,7 @@ contract('KOD tests', function ([creator, mrOne, msTwo, ...accounts]) {
                 const processingStart = votingStart.add(onePeriod).add(onePeriod); // extend past grace period
                 await time.increaseTo(processingStart);
 
-                await this.kod.processNFTProposal(proposalIndex);
+                await this.kod.processProposal(proposalIndex);
 
                 const proposal = await this.kod.proposalQueue(proposalIndex);
                 proposal.didPass.should.be.equal(true);

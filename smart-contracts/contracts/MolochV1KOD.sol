@@ -86,6 +86,22 @@ contract MolochV1KOD {
     mapping(address => address) public memberAddressByDelegateKey;
     Proposal[] public proposalQueue;
 
+    // Non-moloch v1 code below
+
+    ISelfServeEditionCuration public selfServeEditionCuration;
+
+    struct NFTProposal {
+        uint256 totalAvailable;
+        uint256 priceInWei;
+        string tokenUri;
+        uint256 daoSplit;
+        uint256 proposingArtistSplit;
+    }
+
+    mapping(uint256 => NFTProposal) public nftProposals;
+
+    // END Non-moloch v1 code below
+
     /********
     MODIFIERS
     ********/
@@ -146,7 +162,11 @@ contract MolochV1KOD {
 
         emit SummonComplete(summoner, 1);
 
+        // Non-moloch v1 code below
+
         selfServeEditionCuration = _selfServeEditionCuration;
+
+        // END Non-moloch v1 code below
     }
 
     /*****************
@@ -327,6 +347,30 @@ contract MolochV1KOD {
             proposal.sharesRequested,
             didPass
         );
+
+        // Non-moloch v1 code below
+
+        // if totalAvailable > 0 then a NFT proposal
+        NFTProposal storage nftProposal = nftProposals[proposalIndex];
+        if (didPass && !proposal.aborted && nftProposal.totalAvailable > 0) {
+
+            // create NFT in KO via self serve contract
+            selfServeEditionCuration.createEditionFor(
+                address(guildBank),
+                true, //bool _enableAuction,
+                proposal.proposer, //address _optionalSplitAddress,
+                nftProposal.proposingArtistSplit, //uint256 _optionalSplitRate,
+                nftProposal.totalAvailable, //uint256 _totalAvailable,
+                nftProposal.priceInWei, //uint256 _priceInWei,
+                0, //uint256 _startDate,
+                0, //uint256 _endDate,
+                nftProposal.daoSplit, //uint256 _artistCommission,
+                1, //uint256 _editionType,
+                nftProposal.tokenUri //string calldata _tokenUri
+            );
+        }
+
+        // END Non-moloch v1 code below
     }
 
     function ragequit(uint256 sharesToBurn) public onlyMember {
@@ -423,18 +467,6 @@ contract MolochV1KOD {
 
     // Non-moloch v1 code below
 
-    ISelfServeEditionCuration public selfServeEditionCuration;
-
-    struct NFTProposal {
-        uint256 totalAvailable;
-        uint256 priceInWei;
-        string tokenUri;
-        uint256 daoSplit;
-        uint256 proposingArtistSplit;
-    }
-
-    mapping(uint256 => NFTProposal) public nftProposals;
-
     function submitNFTProposal(
         uint256 sharesRequested,
         string memory details,
@@ -461,29 +493,5 @@ contract MolochV1KOD {
         nftProposals[proposalIndex] = nftProposal;
     }
 
-    function processNFTProposal(uint256 proposalIndex) public {
-
-        // let moloch do it's thang
-        processProposal(proposalIndex);
-
-        Proposal storage proposal = proposalQueue[proposalIndex];
-        NFTProposal storage nftProposal = nftProposals[proposalIndex];
-
-        if (proposal.didPass) {
-            // create NFT in KO via self serve contract
-            selfServeEditionCuration.createEditionFor(
-                address(guildBank),
-                true, //bool _enableAuction,
-                proposal.proposer, //address _optionalSplitAddress,
-                nftProposal.proposingArtistSplit, //uint256 _optionalSplitRate,
-                nftProposal.totalAvailable, //uint256 _totalAvailable,
-                nftProposal.priceInWei, //uint256 _priceInWei,
-                0, //uint256 _startDate,
-                0, //uint256 _endDate,
-                nftProposal.daoSplit, //uint256 _artistCommission,
-                1, //uint256 _editionType,
-                nftProposal.tokenUri //string calldata _tokenUri
-            );
-        }
-    }
+    // END Non-moloch v1 code below
 }
