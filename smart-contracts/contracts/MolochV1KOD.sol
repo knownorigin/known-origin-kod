@@ -95,6 +95,7 @@ contract MolochV1KOD {
         uint256 priceInWei;
         string tokenUri;
         uint256 daoSplit;
+        address proposingArtist;
         uint256 proposingArtistSplit;
     }
 
@@ -358,7 +359,7 @@ contract MolochV1KOD {
             selfServeEditionCuration.createEditionFor(
                 address(guildBank),
                 true, //bool _enableAuction,
-                proposal.proposer, //address _optionalSplitAddress,
+                nftProposal.proposingArtist, //address _optionalSplitAddress,
                 nftProposal.proposingArtistSplit, //uint256 _optionalSplitRate,
                 nftProposal.totalAvailable, //uint256 _totalAvailable,
                 nftProposal.priceInWei, //uint256 _priceInWei,
@@ -474,12 +475,13 @@ contract MolochV1KOD {
         uint256 priceInWei,
         string memory tokenUri,
         uint256 daoSplit,
+        address proposingArtist,
         uint256 proposingArtistSplit
     )
     public
     onlyDelegate {
         // get the standard proposal stuff in the moloch
-        submitProposal(msg.sender, 0, sharesRequested, details);
+        submitProposal(proposingArtist, 0, sharesRequested, details);
         uint256 proposalIndex = proposalQueue.length.sub(1);
 
         NFTProposal memory nftProposal = NFTProposal({
@@ -487,6 +489,7 @@ contract MolochV1KOD {
             priceInWei : priceInWei,
             tokenUri : tokenUri,
             daoSplit : daoSplit,
+            proposingArtist : proposingArtist,
             proposingArtistSplit : proposingArtistSplit
             });
 

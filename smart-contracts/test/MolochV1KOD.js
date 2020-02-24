@@ -20,7 +20,7 @@ const onePeriod = new BN('3600');
 contract('KOD tests', function ([creator, mrOne, msTwo, ...accounts]) {
     beforeEach(async function () {
         this.token = await WETH9.new(creator, {from: creator});
-        this.createEdtion = await KOSelfServiceMock.new(creator, {from: creator});
+        this.createEdition = await KOSelfServiceMock.new(creator, {from: creator});
 
         (await this.token.balanceOf(creator)).should.be.bignumber.equal(zero);
 
@@ -34,7 +34,7 @@ contract('KOD tests', function ([creator, mrOne, msTwo, ...accounts]) {
             pointOneEth,
             3,
             zeroPointOneEth,
-            this.createEdtion.address,
+            this.createEdition.address,
             {from: creator}
         );
         (await this.kod.members(creator))[1].should.be.bignumber.equal('1');
@@ -87,6 +87,7 @@ contract('KOD tests', function ([creator, mrOne, msTwo, ...accounts]) {
                     pointOneEth, // price
                     "abcdef", // hash
                     80,
+                    accounts[2],
                     5,
                     {from: creator}
                 );
